@@ -9,3 +9,4 @@ export const fetchWeatherByCity = async (city) => {
   }
   return await response.json();
 };
+
