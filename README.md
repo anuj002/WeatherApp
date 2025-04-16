@@ -20,10 +20,8 @@
 
 ### 1. Clone the Repository
 
-git clone https://github.com/anuj002/WeatherApp.git
+git clone [https://github.com/anuj002/WeatherApp.git](https://github.com/anuj002/WeatherApp)
 cd WeatherApp
-
-git clone https://github.com/anuj002/WeatherApp
 
 ### 2. Install node module
 
