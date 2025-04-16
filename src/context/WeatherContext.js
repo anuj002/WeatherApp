@@ -1,6 +1,8 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { fetchWeatherByCity } from '../services/weatherService';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
+// import { fetchWeatherByCity } from '../services/weatherService';
+import { fetchWeatherByCity } from '../api/ApiCalls';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { debounce } from 'lodash';
 
 export const WeatherContext = createContext();
 
@@ -21,12 +23,24 @@ export const WeatherProvider = ({ children }) => {
     loadLastCity();
   }, []);
 
+  const onSuccess = response => {
+    // console.log('onSuccess==>', response);
+    if (response && response?.data) {
+      setWeather(data);
+    }
+  };
+
+  const onFailure = error => {
+    console.log('onFailure==>', error);
+    setError('City not found.');
+  };
+
   const getWeather = async (cityName) => {
     setLoading(true);
     setError('');
     try {
-      const data = await fetchWeatherByCity(cityName);
-      setWeather(data);
+      // const data = await fetchWeatherByCity(cityName);
+      fetchWeatherByCity(cityName, onSuccess, onFailure);
       setCity(cityName);
       await AsyncStorage.setItem('lastCity', cityName);
     } catch (err) {
@@ -36,6 +50,9 @@ export const WeatherProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  
+  // Debounced version of fetchWeatherByCity
+  const debouncedFetchWeather = useCallback(debounce(getWeather, 500), []);
 
   return (
     <WeatherContext.Provider
@@ -45,7 +62,7 @@ export const WeatherProvider = ({ children }) => {
         weather,
         loading,
         error,
-        getWeather,
+        getWeather: debouncedFetchWeather, // expose debounced version
       }}
     >
       {children}

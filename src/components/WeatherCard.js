@@ -4,11 +4,12 @@ import { useTheme } from '../context/ThemeContext';
 import Icon from 'react-native-vector-icons/Entypo';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
+import { WEATHER_IMAGE_URL } from '../api/ApiConstants';
 
 const WeatherCard = ({ data, bgImage }) => {
   const { darkMode } = useTheme();
   const { name, main, weather, wind } = data;
-  const iconUrl = `https://openweathermap.org/img/wn/${weather[0].icon}@2x.png`;
+  const iconUrl = `${WEATHER_IMAGE_URL + weather[0].icon}@2x.png`;
 
   const styles = createStyles(darkMode);
 
