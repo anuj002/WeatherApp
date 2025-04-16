@@ -1,12 +1,12 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
-// import { fetchWeatherByCity } from '../services/weatherService';
-import { fetchWeatherByCity } from '../api/ApiCalls';
+import React, {createContext, useState, useEffect, useCallback} from 'react';
+import {fetchWeatherByCity} from '../api/ApiCalls';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { debounce } from 'lodash';
+import {debounce} from 'lodash';
+import { Constants } from '../utils/constant';
 
 export const WeatherContext = createContext();
 
-export const WeatherProvider = ({ children }) => {
+export const WeatherProvider = ({children}) => {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -24,33 +24,31 @@ export const WeatherProvider = ({ children }) => {
   }, []);
 
   const onSuccess = response => {
-    // console.log('onSuccess==>', response);
-    if (response && response?.data) {
-      setWeather(data);
+    if (response) {
+      setWeather(response);
     }
   };
 
-  const onFailure = error => {
-    console.log('onFailure==>', error);
-    setError('City not found.');
+  const onFailure = errorr => {
+    console.log('onFailure==>', errorr);
+    setError(Constants.CITY_NOT_FOUND);
   };
 
-  const getWeather = async (cityName) => {
+  const getWeather = async cityName => {
     setLoading(true);
     setError('');
     try {
-      // const data = await fetchWeatherByCity(cityName);
       fetchWeatherByCity(cityName, onSuccess, onFailure);
       setCity(cityName);
       await AsyncStorage.setItem('lastCity', cityName);
     } catch (err) {
-      setError('City not found.');
+      setError(Constants.CITY_NOT_FOUND);
       setWeather(null);
     } finally {
       setLoading(false);
     }
   };
-  
+
   // Debounced version of fetchWeatherByCity
   const debouncedFetchWeather = useCallback(debounce(getWeather, 500), []);
 
@@ -63,8 +61,7 @@ export const WeatherProvider = ({ children }) => {
         loading,
         error,
         getWeather: debouncedFetchWeather, // expose debounced version
-      }}
-    >
+      }}>
       {children}
     </WeatherContext.Provider>
   );

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   TextInput,
@@ -8,30 +8,36 @@ import {
   StyleSheet,
   Switch,
 } from 'react-native';
-import { WeatherContext } from '../context/WeatherContext';
-import { useTheme } from '../context/ThemeContext';
+import {WeatherContext} from '../context/WeatherContext';
+import {useTheme} from '../context/ThemeContext';
 import WeatherCard from '../components/WeatherCard';
-import Animated, { FadeInUp } from 'react-native-reanimated';
+import Animated, {FadeInUp} from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {Constants} from '../utils/constant';
+import {FontSize} from '../theme/fonts';
+import {Color} from '../theme/color';
+import {ImageAssets} from '../theme/imageAssets';
+import {Spacing} from '../theme/spacing';
 
-const getBackgroundImage = (condition) => {
+const getBackgroundImage = condition => {
   switch (condition.toLowerCase()) {
-    case 'clear':
-      return require('../assets/backgrounds/clear.png');
-    case 'clouds':
-      return require('../assets/backgrounds/cloud.png');
-    case 'rain':
-      return require('../assets/backgrounds/rain.png');
-    case 'snow':
-      return require('../assets/backgrounds/snow.png');
+    case Constants.CLEAR:
+      return ImageAssets.clearWeather;
+    case Constants.CLOUDS:
+      return ImageAssets.cloudWeather;
+    case Constants.RAIN:
+      return ImageAssets.rainWeather;
+    case Constants.SNOW:
+      return ImageAssets.snowWeather;
     default:
-      return require('../assets/backgrounds/defult.png');
+      return ImageAssets.defaultWeather;
   }
 };
 
 const HomeScreen = () => {
-  const { city, setCity, getWeather, weather, loading, error } = useContext(WeatherContext);
-  const { darkMode, toggleTheme } = useTheme();
+  const {city, setCity, getWeather, weather, loading, error} =
+    useContext(WeatherContext);
+  const {darkMode, toggleTheme} = useTheme();
   const styles = createStyles(darkMode);
 
   const condition = weather?.weather?.[0]?.main || '';
@@ -41,25 +47,34 @@ const HomeScreen = () => {
     <View style={styles.container}>
       <View style={styles.overlay}>
         <View style={styles.rowContainer}>
-          <Text style={styles.appText}>Weather App</Text>
+          <Text style={styles.appText}>{Constants.APP_TITLE}</Text>
           <View style={styles.toggleContainer}>
             <Switch value={darkMode} onValueChange={toggleTheme} />
-            <Text style={styles.label}>Dark Mode</Text>
+            <Text style={styles.label}>{Constants.DARK_MODE}</Text>
           </View>
         </View>
 
         <View style={styles.inputContainer}>
-          <Icon name="search" size={20} color={darkMode ? '#fff' : '#000'} />
+          <Icon
+            name={Constants.SEARCH}
+            size={20}
+            color={darkMode ? Color.whiteColor : Color.shadowBlackColor}
+          />
           <TextInput
             value={city}
             onChangeText={setCity}
             style={styles.input}
-            placeholder="Enter the name of city"
-            placeholderTextColor={darkMode ? '#ccc' : '#888'}
+            placeholder={Constants.CITY_PLACEHOLDER}
+            placeholderTextColor={
+              darkMode ? Color.lightGrayColor : Color.grayColor
+            }
           />
         </View>
 
-        <Button title="Get Weather" onPress={() => getWeather(city)} />
+        <Button
+          title={Constants.GET_WEATHER}
+          onPress={() => getWeather(city)}
+        />
 
         {loading && <ActivityIndicator style={styles.loading} />}
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -74,53 +89,55 @@ const HomeScreen = () => {
   );
 };
 
-const createStyles = (darkMode) =>
+const createStyles = darkMode =>
   StyleSheet.create({
     container: {
       flex: 1,
     },
     overlay: {
       flex: 1,
-      paddingTop: 20,
-      paddingHorizontal: 16,
-      backgroundColor: darkMode ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)',
+      paddingTop: Spacing[20],
+      paddingHorizontal: Spacing[16],
+      backgroundColor: darkMode
+        ? Color.blackColors.blackOpacity50
+        : Color.transparentWhiteBg,
     },
     rowContainer: {
       flexDirection: 'row',
-      paddingVertical: 5,
+      paddingVertical: Spacing[5],
       alignItems: 'center',
       justifyContent: 'space-between',
     },
     appText: {
-      fontSize: 18,
-      fontWeight:'700',
-      color: darkMode ? '#fff' : '#000',
+      fontSize: FontSize[18],
+      fontWeight: '700',
+      color: darkMode ? Color.whiteColor : Color.shadowBlackColor,
     },
     toggleContainer: {
       alignItems: 'center',
     },
     label: {
-      fontSize: 12,
-      color: darkMode ? '#fff' : '#000',
+      fontSize: FontSize[12],
+      color: darkMode ? Color.whiteColor : Color.shadowBlackColor,
     },
     inputContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       borderWidth: 1,
       borderRadius: 5,
-      paddingHorizontal: 16,
-      marginVertical: 10,
-      borderColor: darkMode ? '#444' : '#ccc',
-      backgroundColor: darkMode ? '#333' : '#fff',
+      paddingHorizontal: Spacing[16],
+      marginVertical: Spacing[10],
+      borderColor: darkMode ? Color.darkGrayColor : Color.lightGrayColor,
+      backgroundColor: darkMode ? Color.normalColor : Color.whiteColor,
     },
     input: {
-      flex:1,
-      fontSize: 16,
-      marginLeft: 10,
-      color: darkMode ? '#fff' : '#000',
+      flex: 1,
+      fontSize: FontSize[16],
+      marginLeft: Spacing[10],
+      color: darkMode ? Color.whiteColor : Color.shadowBlackColor,
     },
-    loading: { marginTop: 10 },
-    error: { color: 'red', marginTop: 50, alignSelf: 'center' },
+    loading: {marginTop: Spacing[10]},
+    error: {color: Color.redColor, marginTop: Spacing[50], alignSelf: 'center'},
   });
 
 export default HomeScreen;
